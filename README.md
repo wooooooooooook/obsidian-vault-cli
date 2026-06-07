@@ -48,12 +48,12 @@ Edit `.env` with your CouchDB credentials and LiveSync passphrase:
 ```dotenv
 COUCHDB_USER=your_admin_user
 COUCHDB_PASSWORD=your_secure_password
-E2EE_PASSPHRASE=your_e2ee_passphrase
+# E2EE_PASSPHRASE=your_e2ee_passphrase  # optional – leave empty to disable encryption
 DB_NAME=obsidiannotes
 # COUCHDB_URL=http://127.0.0.1:5984
 ```
 
-> The `E2EE_PASSPHRASE` is the end-to-end encryption passphrase you set in the LiveSync plugin. It is **never** stored in CouchDB — you must always provide it externally.
+> The `E2EE_PASSPHRASE` is optional. If you disabled E2EE in the LiveSync plugin, leave this empty or omit it entirely. Otherwise, set it to the passphrase you configured in the plugin. It is **never** stored in CouchDB.
 
 ### 4. Start CouchDB (if not already running)
 
