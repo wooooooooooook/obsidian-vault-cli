@@ -207,11 +207,13 @@ export async function createDFM(verbose = false): Promise<DirectFileManipulator>
     // ── 5. Pre-wire database service ────────────────────────────────────────
     (dfm.services as any).database._localDatabase = dfm.liveSyncLocalDB;
 
-    // ── 6. Inject settings with usePathObfuscation (CRITICAL) ──────────────
+    // Inject settings with usePathObfuscation
+    // Only enable path obfuscation when E2EE passphrase is set
+    // (plain text storage when E2EE is disabled)
     (dfm.services as any).setting.settings = {
         ...DEFAULT_SETTINGS,
         ...dfm.settings,
-        usePathObfuscation: vaultSettings.usePathObfuscation,
+        usePathObfuscation: vaultSettings.usePathObfuscation && config.passphrase !== "",
     };
 
     // ── 7. Wait for ready ───────────────────────────────────────────────────
