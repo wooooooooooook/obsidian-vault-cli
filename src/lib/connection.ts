@@ -75,7 +75,7 @@ export function loadConfig(): VaultConfig {
         password: get("COUCHDB_PASSWORD"),
         database: process.env.DB_NAME || fileEnv.DB_NAME || "obsidiannotes",
         // Allow empty passphrase for disabled E2EE
-        passphrase: process.env.E2EE_PASSPHRASE || fileEnv.E2EE_PASSPHRASE || "",
+        passphrase: fileEnv.E2EE_PASSPHRASE ?? process.env.E2EE_PASSPHRASE ?? "",
     };
 }
 
