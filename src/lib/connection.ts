@@ -191,6 +191,23 @@ export async function createDFM(verbose = false): Promise<DirectFileManipulator>
 
     const dfm = new DirectFileManipulator(options);
 
+    // ── HACK: override path2id to always produce f:sha256(path) format ─────
+    // The livesync-commonlib's path2id_base returns bare lowercased path
+    // when obfuscation is disabled (e.g. "roottest-20260608.md").
+    // Obsidian LiveSync expects f:sha256(path) format.
+    const origPath2id = dfm.path2id.bind(dfm);
+    dfm.path2id = async function _patchedPath2id(filename: string, prefix?: string) {
+        const setting = (dfm.services as any).setting.settings ?? dfm.settings;
+        const useObfuscation = setting.usePathObfuscation && setting.passphrase;
+        if (useObfuscation) {
+            return origPath2id(filename, prefix);
+        }
+        const data = new TextEncoder().encode(prefix ? prefix + filename : filename);
+        const hash = await crypto.subtle.digest("SHA-256", data);
+        const hex = Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, "0")).join("");
+        return `f:${hex}` as any;
+    };
+
     // ── 4. Wire handler stubs (synchronous, before init() runs) ────────────
     (dfm.services as any).API.addLog.setHandler((message: any, level: number) => {
         if (verbose && level >= 32) {
